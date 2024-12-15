@@ -7,7 +7,7 @@ pin: false
 toc: true
 math: false
 mermaid: false
-image: ../assets/img/posts/switch-cisco.png
+image: /assets/img/posts/switch-cisco.png
 ---
 
 Dans ce guide, nous allons explorer les étapes pour configurer un switch Cisco en utilisant **Packet Tracer**, un outil de simulation réseau populaire. Ce guide est idéal pour les débutants souhaitant comprendre les bases.
