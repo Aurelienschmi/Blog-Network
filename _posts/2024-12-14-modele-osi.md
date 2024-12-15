@@ -2,7 +2,7 @@
 title: "Comprendre le Modèle OSI : Les Bases du Réseau"
 date: 2024-12-14 12:00:00 +0100
 categories: [Théorie, Modèle OSI]
-tags: [OSI, réseau, TCP/IP]
+tags: [OSI, Réseaux, TCP/IP]
 pin: false
 toc: true
 math: false

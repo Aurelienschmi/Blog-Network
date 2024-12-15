@@ -1,8 +1,8 @@
 ---
-title: "Configurer un Switch Cisco : Les Bases"
+title: "Configuration de Base d'un switch Cisco : Guide Complet"
 date: 2024-12-14 10:00:00 +0100
-categories: [Configuration, Swicth]
-tags: [switch, configuration, Cisco Packet Tracer]
+categories: [Configuration, Switch]
+tags: [Switch, Configuration, Cisco]
 pin: false
 toc: true
 math: false
@@ -10,17 +10,30 @@ mermaid: false
 image: ../assets/img/posts/switch-cisco.png
 ---
 
-Dans cet article, nous allons apprendre à configurer un switch Cisco à partir de zéro. L'objectif est de vous familiariser avec les commandes de base utilisées pour gérer un switch et configurer des paramètres essentiels comme le mot de passe, le nom de l’appareil et l'accès à distance via Telnet ou SSH.
+Dans ce guide, nous allons explorer les étapes pour configurer un switch Cisco en utilisant **Packet Tracer**, un outil de simulation réseau populaire. Ce guide est idéal pour les débutants souhaitant comprendre les bases.
 
 ---
 
-## Pré-requis
-Avant de commencer, assurez-vous d'avoir les éléments suivants :
+## Objectifs
 
-1. **Un simulateur réseau comme Cisco Packet Tracer** ou un switch Cisco physique.
-2. **Un logiciel terminal** comme Putty, Tera Term ou la console intégrée de Packet Tracer.
-3. Une compréhension de base des réseaux (IP, sous-réseaux, etc.).
+1. Connexion au switch via la console.
+2. Suppression de l'ancienne configuration.
+3. Configuration basique du switch.
+4. Configuration des accès (console, telnet).
+5. Configuration d'une adresse IP.
+6. Configuration de SSH pour un accès sécurisé.
+7. Enregistrement de la configuration.
+8. Vérification et tests.
 
+---
+
+## Matériel Requis
+
+- **Cisco Packet Tracer** installé sur votre ordinateur.
+- Un projet Packet Tracer avec au moins un routeur et un PC connectés.
+
+ou pour un switch physique :
+- **Un logiciel terminal** comme Putty, Tera Term ou la console intégrée de Packet Tracer.
 ---
 
 ## Étapes de Configuration
