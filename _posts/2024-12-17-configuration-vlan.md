@@ -2,13 +2,13 @@
 title: "Création d'une VLAN sur Cisco Packet Tracer"
 date: 2024-12-17 19:00:00 +0100
 tags: [Cisco, VLAN, Réseaux, Packet Tracer]
-categories: [Tutoriels]
+categories: [Configuration, Réseaux]
 description: "Tutoriel détaillé pour configurer une VLAN sur Cisco Packet Tracer."
 pin: false
 toc: true
 math: false
 mermaid: false
-image: /assets/img/posts/types-cables.png
+image: /assets/img/posts/vlan.png
 ---
 
 # Création d'une VLAN sur Cisco Packet Tracer
@@ -74,6 +74,12 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants :
    Switch(config-if)# switchport access vlan 10
    Switch(config-if)# exit
    ```
+
+> **Remarque :** Si vous voulez passer plusieurs ports en même temps dans un VLAN, même si ces ports ne sont pas les un à la suite des autres, vous pouvez utiliser la commande suivante :
+```plaintext
+   Switch(config)# interface range fastEthernet 0/1-2
+   ```
+{: .prompt-tip }
 
 4. **Vérifiez la configuration** :
 
