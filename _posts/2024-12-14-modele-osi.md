@@ -1,5 +1,5 @@
 ---
-title: "Comprendre le Modèle OSI : Les Bases du Réseau"
+title: "Comprendre le Modèle OSI"
 date: 2024-12-14 12:00:00 +0100
 categories: [Théorie, Modèle OSI]
 tags: [OSI, Réseaux, TCP/IP]

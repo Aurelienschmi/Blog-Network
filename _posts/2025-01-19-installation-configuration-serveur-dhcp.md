@@ -29,7 +29,7 @@ Avant de commencer, assurez-vous d'avoir :
 > su
 > ```
 > Entrez le mot de passe root lorsqu'il est demandé.
-
+{: .prompt-tip }
 ---
 
 ## Étapes détaillées
@@ -230,8 +230,4 @@ Vous devriez voir une adresse comprise entre `192.168.200.200` et `192.168.200.2
 
 ## Conclusion
 
-Ce guide vous a montré comment installer et configurer un serveur DHCP sur Debian, y compris la configuration d'une adresse statique pour le serveur et les tests sur une machine cliente. Un serveur DHCP est un outil indispensable pour automatiser la gestion des adresses IP dans un réseau. Continuez à explorer les paramètres avancés pour mieux comprendre et maîtriser cet outil !
-
----
-
-**Note** : N'hésitez pas à intégrer des captures d'écran ou des schémas pour illustrer votre configuration.
+Ce guide vous a montré comment installer et configurer un serveur DHCP sur Debian, y compris la configuration d'une adresse statique pour le serveur et les tests sur une machine cliente. Un serveur DHCP est un outil indispensable pour automatiser la gestion des adresses IP dans un réseau.

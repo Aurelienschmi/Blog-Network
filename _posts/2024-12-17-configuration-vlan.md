@@ -120,6 +120,3 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants :
 Dans ce tutoriel, nous avons appris à configurer une VLAN sur Cisco Packet Tracer, incluant la création de la topologie, la configuration des VLAN sur un switch, et les tests de connectivité. Cette compétence est fondamentale pour segmenter un réseau et améliorer sa gestion.
 
 Pour aller plus loin, explorez les VLANs tronquées (trunk VLAN) pour connecter plusieurs switches ensemble.
-
-<!-- Ajoutez une image ici si besoin pour illustrer la topologie à l'aide de Cisco Packet Tracer -->
-
