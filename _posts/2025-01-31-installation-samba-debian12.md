@@ -1,18 +1,18 @@
 ---
-title: "Installer un serveur SMB (Samba) sous Debian 12"
+title: "Configuration d’un espace de stockage sécurisé avec SFTP sous Debian 12"
 date: 2025-01-31 12:00:00 +0100
-tags: ["SMB", "Samba", "Debian", "Serveur", "Réseaux"]
+tags: ["SFTP", "Sécurité", "Stockage", "Debian", "Serveur"]
 categories: ["Networking", "Systèmes"]
 pin: false
 toc: true
 math: false
 mermaid: false
-image: /assets/img/posts/smb.png
+image: /assets/img/posts/sftp.png
 ---
 
 ## Introduction
 
-Le protocole **SMB (Server Message Block)**, implémenté par le logiciel **Samba**, permet de partager des fichiers et imprimantes entre systèmes Linux et Windows. C'est une solution efficace pour centraliser des ressources et permettre un accès réseau sécurisé. Cet article détaille l'installation et la configuration de **Samba** sur **Debian 12**.
+Le protocole **SFTP (Secure File Transfer Protocol)** est une solution sécurisée pour transférer des fichiers sur un réseau en utilisant SSH. Contrairement à FTP, qui est souvent non chiffré, SFTP assure la confidentialité et l'intégrité des données échangées. Cet article vous guide dans l'installation et la configuration d'un serveur **SFTP** sous **Debian 12**, permettant de gérer un espace de stockage sécurisé.
 
 ---
 
@@ -20,10 +20,10 @@ Le protocole **SMB (Server Message Block)**, implémenté par le logiciel **Samb
 
 Avant de commencer, assurez-vous d'avoir :
 
-- Une machine Debian 12 (serveur SMB).
+- Une machine Debian 12 (serveur SFTP).
 - Un accès administrateur ou **root**.
 - Une connexion réseau opérationnelle.
-- Un autre système (Linux/Windows) pour tester le partage.
+- Un client SFTP (FileZilla, WinSCP ou la commande `sftp`).
 
 ---
 
@@ -39,166 +39,141 @@ sudo apt update && sudo apt upgrade -y
 
 ---
 
-### 2. Installation de Samba
+### 2. Vérification et activation de SSH
 
-Samba est disponible dans les dépôts officiels de Debian.
-
-```bash
-sudo apt install samba -y
-```
-
-Après l'installation, vérifiez que le service est actif :
+SFTP est inclus avec **OpenSSH**. Vérifiez si **SSH** est installé et actif :
 
 ```bash
-sudo systemctl status smbd
+sudo systemctl status ssh
 ```
 
-Si le service n'est pas actif, démarrez-le et activez-le au démarrage :
+Si SSH n'est pas installé, installez-le avec :
 
 ```bash
-sudo systemctl enable --now smbd
+sudo apt install openssh-server -y
 ```
-> **Astuce :** Vous pouvez passer en mode root en utilisant la commande suivante :
->
-> ```bash
-> su -
-> ```
-> Entrez le mot de passe root lorsqu'il est demandé.
-{: .prompt-tip }
+
+Puis, démarrez et activez le service :
+
+```bash
+sudo systemctl enable --now ssh
+```
+
 ---
 
-### 3. Configuration de Samba
+### 3. Création d'un groupe et d'utilisateurs pour SFTP
 
-L'ensemble des paramètres de Samba est défini dans le fichier **`/etc/samba/smb.conf`**.
-
-Avant toute modification, sauvegardez le fichier original :
+Pour renforcer la sécurité, nous allons créer un groupe spécifique **sftpusers** et ajouter des utilisateurs dédiés.
 
 ```bash
-sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
+sudo groupadd sftpusers
 ```
 
-#### a. Partage d'un répertoire public
-
-Modifiez le fichier de configuration :
+Ajoutez un utilisateur **sftpuser** au groupe et attribuez-lui un mot de passe :
 
 ```bash
-sudo nano /etc/samba/smb.conf
+sudo useradd -m -d /home/sftpuser -g sftpusers -s /sbin/nologin sftpuser
+sudo passwd sftpuser
 ```
 
-Ajoutez les lignes suivantes à la fin du fichier :
+Le shell **/sbin/nologin** empêche l'utilisateur d'accéder au serveur en SSH.
+
+---
+
+### 4. Configuration de SSH pour restreindre l'accès à SFTP
+
+Modifiez le fichier **/etc/ssh/sshd_config** :
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Ajoutez ces lignes à la fin du fichier :
 
 ```plaintext
-[partage]
-   comment = Partage de données
-   path = /srv/partage
-   guest ok = no
-   read only = no
-   browseable = yes
-   valid users = @partage
+Match Group sftpusers
+ChrootDirectory /home/%u
+ForceCommand internal-sftp
+AllowTcpForwarding no
+X11Forwarding no
 ```
 
-###Quelques explications :
+Ces paramètres :
+- **Restreignent les utilisateurs du groupe `sftpusers` à leur répertoire personnel**.
+- **Forcent l'utilisation du mode `internal-sftp` pour désactiver l'accès SSH**.
+- **Désactivent le transfert de ports et le transfert X11 pour plus de sécurité**.
 
-- [partage] : sert à spécifier le nom du partage entre "[]", c'est le nom qui devra être utilisé pour accéder au partage
-   - comment : description du partage
-   - path : chemin vers le dossier à partager, sur le serveur
-   - guest ok : accès invité au partage (par défaut "no"). Si vous décidez d'activer cette option, vous devez configurer l'option "guest account" qui par défaut prend la valeur "nobody".
-   - read only : partage accessible uniquement en lecture seule (yes ou no)
-   - browseable : le partage doit-il être visible ou masqué si on liste les partages du serveur avec un hôte distant (découverte réseau). La valeur "yes" permet de le rendre visible.
-   - valid users : spécifier les utilisateurs ou les groupes qui ont les droits d'accès au partage (les droits sur le système de fichiers doivent être cohérents vis-à-vis de cette autorisation). On précise un utilisateur avec son identifiant et un groupe avec son identifiant précédé du caractère "@". Pour indiquer plusieurs valeurs, séparez-les par une virgule.
+> **Astuce :** Vous pouvez accéder à tout les paramètres de configuration à cet url: https://man7.org/linux/man-pages/man5/sshd_config.5.html
+{: .notice--info}
 
-Créez le dossier partagé et définissez les permissions :
+
+Redémarrez le service SSH pour appliquer les changements :
 
 ```bash
-sudo mkdir -p /srv/samba/public
-sudo chmod 777 /srv/samba/public
-```
-
-Redémarrez Samba pour appliquer les modifications :
-
-```bash
-sudo systemctl restart smbd
-```
-
-#### b. Partage sécurisé avec authentification
-
-Ajoutez un utilisateur Samba :
-
-```bash
-sudo smbpasswd -a utilisateur
-```
-
-Modifiez **`smb.conf`** et ajoutez un partage privé :
-
-```plaintext
-[PartagePrive]
-   path = /srv/samba/prive
-   read only = no
-   valid users = utilisateur
-   create mask = 0700
-   directory mask = 0700
-```
-
-Créez le dossier et définissez les permissions :
-
-```bash
-sudo mkdir -p /srv/samba/prive
-sudo chown utilisateur:utilisateur /srv/samba/prive
-sudo chmod 700 /srv/samba/prive
-```
-
-Appliquez les modifications :
-
-```bash
-sudo systemctl restart smbd
+sudo systemctl restart ssh
 ```
 
 ---
 
-### 4. Accès aux partages Samba
+### 5. Définition des permissions et sécurisation
 
-#### a. Depuis Windows
-
-1. Ouvrez **Explorateur de fichiers**.
-2. Dans la barre d'adresse, entrez `\\<IP_DU_SERVEUR>`.
-3. Accédez aux dossiers publics ou connectez-vous avec les identifiants Samba.
-
-#### b. Depuis Linux
-
-Montez le partage public :
+Définissez les permissions pour sécuriser l'accès :
 
 ```bash
-sudo mount -t cifs //192.168.1.100/PartagePublic /mnt -o guest
+sudo chown root:root /home/sftpuser
+sudo chmod 755 /home/sftpuser
+sudo mkdir -p /home/sftpuser/data
+sudo chown sftpuser:sftpusers /home/sftpuser/data
+sudo chmod 700 /home/sftpuser/data
 ```
 
-Montez le partage privé avec authentification :
-
-```bash
-sudo mount -t cifs //192.168.1.100/PartagePrive /mnt -o username=utilisateur
-```
+- **Le dossier `/home/sftpuser` appartient à root pour empêcher toute modification**.
+- **Les fichiers doivent être stockés dans `/home/sftpuser/data` accessible par l'utilisateur SFTP**.
 
 ---
 
-### 5. Supprimer ou gérer Samba
+### 6. Tester la connexion SFTP
 
-#### a. Supprimer Samba complètement
+#### a. Depuis un client Linux
+
+Utilisez la commande :
 
 ```bash
-sudo apt remove --purge samba -y
-sudo rm -rf /etc/samba /var/lib/samba
+sftp sftpuser@<IP_DU_SERVEUR>
 ```
 
-#### b. Désactiver temporairement Samba
+Entrez le mot de passe et testez l'envoi d'un fichier :
 
 ```bash
-sudo systemctl stop smbd
-sudo systemctl disable smbd
+put mon_fichier.txt
+```
+
+#### b. Depuis Windows (FileZilla/WinSCP)
+
+1. **Ouvrez FileZilla** et entrez :
+   - Hôte : `sftp://<IP_DU_SERVEUR>`
+   - Nom d'utilisateur : `sftpuser`
+   - Mot de passe : (celui défini précédemment)
+2. Connectez-vous et testez le transfert de fichiers.
+
+---
+
+### 7. Supprimer ou gérer SFTP
+
+#### a. Supprimer un utilisateur SFTP
+
+```bash
+sudo deluser --remove-home sftpuser
+```
+
+#### b. Supprimer complètement OpenSSH
+
+```bash
+sudo apt remove --purge openssh-server -y
 ```
 
 ---
 
 ## Conclusion
 
-Samba est une solution puissante pour le partage de fichiers entre Linux et Windows. Que ce soit pour des dossiers accessibles à tous ou des partages sécurisés, cette configuration permet de créer un serveur SMB fonctionnel sur Debian 12.
-
-
+L'utilisation de **SFTP** est une solution efficace et sécurisée pour le transfert de fichiers. En configurant correctement les permissions et en restreignant l'accès, vous améliorez la sécurité des données stockées.
