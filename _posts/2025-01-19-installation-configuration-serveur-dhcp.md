@@ -26,7 +26,7 @@ Avant de commencer, assurez-vous d'avoir :
 > **Astuce :** Vous pouvez passer en mode root en utilisant la commande suivante :
 >
 > ```bash
-> su
+> su -
 > ```
 > Entrez le mot de passe root lorsqu'il est demandé.
 {: .prompt-tip }
